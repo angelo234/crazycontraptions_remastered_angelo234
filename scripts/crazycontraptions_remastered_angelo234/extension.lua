@@ -11,8 +11,8 @@ string.strEndsWith = function(s, suffix)
 end
 
 local function getFuelTypeFromPart(slot_name, part_name)
-	if slot_name:strEndsWith("fueltank") then
-					
+	if slot_name:match("fueltank") or slot_name:match("fuelcell") then
+	
 		if part_name:match("petrol") then
 			return fuel_types[1]
 			
@@ -63,6 +63,9 @@ local function getFuelTypeFromPart(slot_name, part_name)
 end
 
 local function randomizeVehicleParts()
+	-- Seems to help with creating 'randomness'
+	math.randomseed(os.time())
+	
 	-- Gets vehicle's name
 	local carname = be:getPlayerVehicle(0):getJBeamFilename()
 	
@@ -70,17 +73,17 @@ local function randomizeVehicleParts()
 	
 	-- Get all slots
 	local all_slots = require('jbeam/io').getAvailableSlotMap(extensions.core_vehicle_manager.getPlayerVehicleData().ioCtx)
-	
+
 	local fuel_type = nil
 	
 	-- Cycle through each slot
-	for slot_name, curr_part in pairs(config.parts) do
+	for slot_name, _ in pairs(all_slots) do
 		local parts_for_slot = all_slots[slot_name]
 		
 		if parts_for_slot then
 
-			if fuel_type and slot_name:strEndsWith("fueltank") then
-				
+			if fuel_type and (slot_name:match("fueltank") or slot_name:match("fuelcell")) then
+			
 				local keyset = {}
 					
 				for part_k, part in pairs(parts_for_slot) do
@@ -107,7 +110,7 @@ local function randomizeVehicleParts()
 				end
 				
 				local random_part = parts_for_slot[keyset[math.random(#keyset)]]
-				
+
 				config.parts[slot_name] = random_part
 
 			elseif fuel_type and slot_name:strEndsWith("engine") then
