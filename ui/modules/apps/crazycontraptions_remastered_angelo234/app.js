@@ -1,0 +1,16 @@
+angular.module('beamng.apps')
+.directive('crazycontraptionsRemasteredAngelo234', [function () {
+return {
+templateUrl: '/ui/modules/apps/crazycontraptions_remastered_angelo234/app.html',
+replace: true,
+restrict: 'EA',
+link: function (scope, element, attrs) {
+	// The current overlay screen the user is on (default: null)
+	scope.overlayScreen = null;	
+
+	scope.scrambleconfig = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeVehicleParts()');
+	};
+},
+};
+}]);

@@ -1,0 +1,1 @@
+registerCoreModule('scripts/crazycontraptions_remastered_angelo234/extension')

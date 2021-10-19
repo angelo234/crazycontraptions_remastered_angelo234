@@ -1,0 +1,10 @@
+{
+  "name" : "Crazy Contraptions Remastered",
+  "author": "angelo234",
+  "version": "0.1",
+  "description": "Creates a crazy thing out of random parts.",
+  "directive": "crazycontraptionsRemasteredAngelo234",
+  "domElement": "<crazycontraptions-remastered-angelo234></crazycontraptions-remastered-angelo234>",
+  "css": { "width": "200px", "height": "200px", "min-width": "100px", "min-height": "100px", "top": "200px", "right": "200px"}
+}
+   
