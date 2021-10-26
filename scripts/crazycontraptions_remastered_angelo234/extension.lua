@@ -112,6 +112,38 @@ local function getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
 	end
 end
 
+--[[
+local function getRandomTorqueConverterPart(parts_for_slot, fuel_type)
+	local filtered_parts = {}
+	
+	for _, part in pairs(parts_for_slot) do
+		if part:match(fuel_type.engine) then
+			table.insert(filtered_parts, part)   
+		end
+	end
+	
+	-- If no torque converters matched the fuel type, find petrol torque converters
+	if #filtered_parts == 0 then
+		for _, part in pairs(parts_for_slot) do
+			local has_match = false
+		
+			for _, a_fuel_type in pairs(fuel_types) do
+				if part:match(a_fuel_type.engine) then
+					has_match = true
+				end
+			end
+		
+			if not has_match then
+				table.insert(filtered_parts, part)
+			end
+		end
+	end
+	
+	return filtered_parts[math.random(#filtered_parts)]	
+end
+]]--
+
+
 local function randomizeVehicleParts()
 	local all_slots = jbeam_io.getAvailableSlotMap(extensions.core_vehicle_manager.getPlayerVehicleData().ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(extensions.core_vehicle_manager.getPlayerVehicleData().ioCtx)
@@ -120,6 +152,9 @@ local function randomizeVehicleParts()
 
 	-- Choose fuel type to use randomly
 	local fuel_type = fuel_types[math.random(3)]
+	
+	print(veh_name)
+	print(fuel_type.fuel)
 	
 	local chosen_final_drive = nil
 	
@@ -131,16 +166,13 @@ local function randomizeVehicleParts()
 
 			-- Some slots need part to be chosen wisely
 
-			if slot_name:find(veh_name) and (slot_name:match("fueltank") or slot_name:match("fuelcell")) then
-			
+			if slot_name:match("fueltank") or slot_name:match("fuelcell") then
 				all_parts[slot_name] = getRandomFuelTankPart(parts_for_slot, fuel_type)
 
-			elseif slot_name:find(veh_name) and slot_name:strEndsWith("engine") then
-				
+			elseif slot_name:strEndsWith("engine") then
 				all_parts[slot_name] = getRandomEnginePart(parts_for_slot, fuel_type)
 			
-			elseif slot_name:find(veh_name) and slot_name:match("differential") then
-			
+			elseif slot_name:match("differential") then		
 				all_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
 				
 			elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
