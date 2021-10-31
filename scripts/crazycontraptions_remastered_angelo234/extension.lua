@@ -143,19 +143,13 @@ local function getRandomTorqueConverterPart(parts_for_slot, fuel_type)
 end
 ]]--
 
-
-local function randomizeVehicleParts()
-	local all_slots = jbeam_io.getAvailableSlotMap(extensions.core_vehicle_manager.getPlayerVehicleData().ioCtx)
-	local all_parts = jbeam_io.getAvailableParts(extensions.core_vehicle_manager.getPlayerVehicleData().ioCtx)
-
-	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
-
+local function randomizeParts(veh, veh_data, veh_name, all_slots, all_parts)
+	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
+	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
+	
 	-- Choose fuel type to use randomly
 	local fuel_type = fuel_types[math.random(3)]
-	
-	print(veh_name)
-	print(fuel_type.fuel)
-	
+
 	local chosen_final_drive = nil
 	
 	-- Cycle through each slot and choose random parts for them
@@ -195,7 +189,60 @@ local function randomizeVehicleParts()
 		end
 	end
 	
-	extensions.core_vehicle_partmgmt.setPartsConfig(all_parts, true)
+	extensions.core_vehicle_partmgmt.setPartsConfig(all_parts, false)
+end
+
+local function randomizeTuningValues(veh, veh_data)
+	local vars = veh_data.vdata.variables
+	
+	local val_only_vars = {}
+	
+	for k, v in pairs(vars) do
+		-- Set random value between min and max range	
+
+		local rand_num = v.min + (v.max - v.min) * math.random()
+		
+		rand_num = math.floor(rand_num / v.step) * v.step;
+		
+		val_only_vars[k] = rand_num
+	end
+	
+	extensions.core_vehicle_partmgmt.setConfigVars(val_only_vars, true)
+	
+end
+
+local function randomizeColors(veh, veh_data)
+	for i = 1, 3 do
+		local paint = createVehiclePaint(
+			{
+				x = math.random(0, 100) / 100, 
+				y = math.random(0, 100) / 100, 
+				z = math.random(0, 100) / 100, 
+				w = math.random(0, 200) / 100
+			}, 
+			{
+				math.random(0, 100) / 100, 
+				math.random(0, 100) / 100, 
+				0, 
+				0
+			})
+		veh_data.config.paints[i] = paint
+		extensions.core_vehicle_manager.liveUpdateVehicleColors(veh:getID(), veh, i, paint)
+	end
+end
+
+-- Public function called from JS App
+local function randomizeVehicleParts()
+	local veh = be:getPlayerVehicle(0)	
+	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
+	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
+	veh_data.config.paints = veh_data.config.paints or {}
+
+	randomizeParts(veh, veh_data, veh_name)
+	
+	randomizeTuningValues(veh, veh_data)
+	
+	randomizeColors(veh, veh_data)
 end
 
 M.randomizeVehicleParts = randomizeVehicleParts
