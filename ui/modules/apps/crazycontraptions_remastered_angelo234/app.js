@@ -8,8 +8,20 @@ link: function (scope, element, attrs) {
 	// The current overlay screen the user is on (default: null)
 	scope.overlayScreen = null;	
 
-	scope.scrambleconfig = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeVehicleParts()');
+	scope.randomizeEverything = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything()');
+	};
+	
+	scope.randomizeParts = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeParts()');
+	};
+	
+	scope.randomizeTuning = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeTuning()');
+	};
+	
+	scope.randomizePaint = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizePaint()');
 	};
 },
 };

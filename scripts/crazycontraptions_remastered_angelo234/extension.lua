@@ -143,7 +143,11 @@ local function getRandomTorqueConverterPart(parts_for_slot, fuel_type)
 end
 ]]--
 
-local function randomizeParts(veh, veh_data, veh_name, all_slots, all_parts)
+local function randomizeParts()
+	local veh = be:getPlayerVehicle(0)	
+	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
+	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
+	
 	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 	
@@ -189,10 +193,14 @@ local function randomizeParts(veh, veh_data, veh_name, all_slots, all_parts)
 		end
 	end
 	
-	extensions.core_vehicle_partmgmt.setPartsConfig(all_parts, false)
+	extensions.core_vehicle_partmgmt.setPartsConfig(all_parts, true)
 end
 
-local function randomizeTuningValues(veh, veh_data)
+local function randomizeTuning()
+	local veh = be:getPlayerVehicle(0)	
+	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
+	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
+	
 	local vars = veh_data.vdata.variables
 	
 	local val_only_vars = {}
@@ -211,7 +219,12 @@ local function randomizeTuningValues(veh, veh_data)
 	
 end
 
-local function randomizeColors(veh, veh_data)
+local function randomizePaint()
+	local veh = be:getPlayerVehicle(0)	
+	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
+	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
+	veh_data.config.paints = veh_data.config.paints or {}
+	
 	for i = 1, 3 do
 		local paint = createVehiclePaint(
 			{
@@ -231,20 +244,15 @@ local function randomizeColors(veh, veh_data)
 	end
 end
 
--- Public function called from JS App
-local function randomizeVehicleParts()
-	local veh = be:getPlayerVehicle(0)	
-	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
-	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
-	veh_data.config.paints = veh_data.config.paints or {}
-
-	randomizeParts(veh, veh_data, veh_name)
-	
-	randomizeTuningValues(veh, veh_data)
-	
-	randomizeColors(veh, veh_data)
+local function randomizeEverything()
+	randomizeParts()
+	randomizeTuning()
+	randomizePaint()
 end
 
-M.randomizeVehicleParts = randomizeVehicleParts
+M.randomizeParts = randomizeParts
+M.randomizeTuning = randomizeTuning
+M.randomizePaint = randomizePaint
+M.randomizeEverything = randomizeEverything
 
 return M
