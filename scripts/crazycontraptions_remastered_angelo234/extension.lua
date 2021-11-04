@@ -203,16 +203,32 @@ local function randomizeTuning()
 	
 	local vars = veh_data.vdata.variables
 	
+	local chosen_final_drive = nil
+	
 	local val_only_vars = {}
 	
 	for k, v in pairs(vars) do
 		-- Set random value between min and max range	
 
-		local rand_num = v.min + (v.max - v.min) * math.random()
-		
-		rand_num = math.floor(rand_num / v.step) * v.step;
-		
-		val_only_vars[k] = rand_num
+		if k:match("finaldrive") then
+			-- For adjustable final drive diffs, choose same ratio for front and rear
+			
+			if chosen_final_drive then
+				val_only_vars[k] = chosen_final_drive
+				
+			else
+				local rand_num = v.min + (v.max - v.min) * math.random()	
+				rand_num = math.floor(rand_num / v.step) * v.step;
+				val_only_vars[k] = rand_num
+				
+				chosen_final_drive = rand_num
+			end
+			
+		else	
+			local rand_num = v.min + (v.max - v.min) * math.random()	
+			rand_num = math.floor(rand_num / v.step) * v.step;
+			val_only_vars[k] = rand_num
+		end
 	end
 	
 	extensions.core_vehicle_partmgmt.setConfigVars(val_only_vars, true)
