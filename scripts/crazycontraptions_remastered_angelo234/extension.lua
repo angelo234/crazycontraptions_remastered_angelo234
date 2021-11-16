@@ -3,9 +3,9 @@ local M = {}
 local jbeam_io = require('jbeam/io')
 
 local fuel_types = {
-	{engine="petrol", fuel="petrol"},
-	{engine="diesel", fuel="diesel"},
-	{engine="electric", fuel="battery"}
+	{engine={"petrol", "gasoline"}, fuel={"petrol", "gasoline"}},
+	{engine={"diesel"}, fuel={"diesel"}},
+	{engine={"electric"}, fuel={"battery"}}
 }
 
 string.strEndsWith = function(s, suffix)
@@ -16,9 +16,12 @@ local function getRandomFuelTankPart(parts_for_slot, fuel_type)
 	local filtered_parts = {}
 					
 	for _, part in pairs(parts_for_slot) do
-		if part:match(fuel_type.fuel) then
-			table.insert(filtered_parts, part)   
+		for _, alias_fuel in pairs(fuel_type.fuel) do
+			if part:match(alias_fuel) then
+				table.insert(filtered_parts, part)   
+			end
 		end
+		
 	end
 	
 	-- If no fueltanks matched the fuel type, find petrol fueltanks
@@ -27,8 +30,10 @@ local function getRandomFuelTankPart(parts_for_slot, fuel_type)
 			local has_match = false
 		
 			for _, a_fuel_type in pairs(fuel_types) do
-				if part:match(a_fuel_type.fuel) then
-					has_match = true
+				for _, an_alias_fuel in pairs(a_fuel_type.fuel) do
+					if part:match(an_alias_fuel) then
+						has_match = true
+					end
 				end
 			end
 		
@@ -45,8 +50,10 @@ local function getRandomEnginePart(parts_for_slot, fuel_type)
 	local filtered_parts = {}
 					
 	for _, part in pairs(parts_for_slot) do
-		if part:match(fuel_type.engine) then
-			table.insert(filtered_parts, part)   
+		for _, alias_engine in pairs(fuel_type.engine) do
+			if part:match(alias_engine) then
+				table.insert(filtered_parts, part)   
+			end
 		end
 	end
 	
@@ -56,8 +63,10 @@ local function getRandomEnginePart(parts_for_slot, fuel_type)
 			local has_match = false
 		
 			for _, a_fuel_type in pairs(fuel_types) do
-				if part:match(a_fuel_type.engine) then
-					has_match = true
+				for _, an_alias_engine in pairs(a_fuel_type.engine) do
+					if part:match(an_alias_engine) then
+						has_match = true
+					end
 				end
 			end
 		
@@ -71,7 +80,7 @@ local function getRandomEnginePart(parts_for_slot, fuel_type)
 end
 
 local function getRandomDifferentialPart(parts_for_slot, fuel_type)
-	if fuel_type.fuel == fuel_types[3].fuel then
+	if fuel_type.fuel[1] == fuel_types[3].fuel[1] then
 		-- Any differential for electric vehicle
 	
 		return parts_for_slot[math.random(#parts_for_slot)]			
@@ -82,7 +91,7 @@ local function getRandomDifferentialPart(parts_for_slot, fuel_type)
 		local filtered_parts = {}
 		
 		for _, part in pairs(parts_for_slot) do
-			if not part:match(fuel_types[3].engine) then
+			if not part:match(fuel_types[3].engine[1]) then
 				table.insert(filtered_parts, part)   
 			end
 		end
@@ -111,37 +120,6 @@ local function getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
 	
 	end
 end
-
---[[
-local function getRandomTorqueConverterPart(parts_for_slot, fuel_type)
-	local filtered_parts = {}
-	
-	for _, part in pairs(parts_for_slot) do
-		if part:match(fuel_type.engine) then
-			table.insert(filtered_parts, part)   
-		end
-	end
-	
-	-- If no torque converters matched the fuel type, find petrol torque converters
-	if #filtered_parts == 0 then
-		for _, part in pairs(parts_for_slot) do
-			local has_match = false
-		
-			for _, a_fuel_type in pairs(fuel_types) do
-				if part:match(a_fuel_type.engine) then
-					has_match = true
-				end
-			end
-		
-			if not has_match then
-				table.insert(filtered_parts, part)
-			end
-		end
-	end
-	
-	return filtered_parts[math.random(#filtered_parts)]	
-end
-]]--
 
 local drivetrain_slots_names = 
 {
