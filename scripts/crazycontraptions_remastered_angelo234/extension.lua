@@ -143,13 +143,53 @@ local function getRandomTorqueConverterPart(parts_for_slot, fuel_type)
 end
 ]]--
 
-local function randomizeParts()
+local drivetrain_slots_names = 
+{
+	"brake",
+	"n2o",
+	"tire",
+	"ABS",
+	"DSE",
+	"ESC",
+	"diff",
+	"driveshaft",
+	"engine",
+	"intake",
+	"finaldrive",
+	"fueltank",
+	"steer",
+	"shock",
+	"spring",
+	"strut",
+	"suspension",
+	"coilover",
+	"swaybar",
+	"transfer",
+	"transmission",
+	"wheel",
+	"oilpan",
+	"converter",
+	"ecu",
+	"axle",
+	"leaf",
+	"feet",
+	"halfshaft",
+	"internals",
+	"radiator",
+	"main",
+	"linelock",
+	"link"
+}
+
+local function randomizeOnlyDrivetrainParts()
 	local veh = be:getPlayerVehicle(0)	
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
 	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
 	
 	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
+	
+	local curr_parts = veh_data.config.parts
 	
 	-- Choose fuel type to use randomly
 	local fuel_type = fuel_types[math.random(3)]
@@ -162,38 +202,96 @@ local function randomizeParts()
 		
 		if parts_for_slot then
 
-			-- Some slots need part to be chosen wisely
-
-			if slot_name:match("fueltank") or slot_name:match("fuelcell") then
-				all_parts[slot_name] = getRandomFuelTankPart(parts_for_slot, fuel_type)
-
-			elseif slot_name:strEndsWith("engine") then
-				all_parts[slot_name] = getRandomEnginePart(parts_for_slot, fuel_type)
+			-- Get only drivetrain parts
+			local has_match = false
 			
-			elseif slot_name:match("differential") then		
-				all_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
-				
-			elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
-				all_parts[slot_name] = getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
-				
-				if not chosen_final_drive then
-					local split_str = split(all_parts[slot_name], "_")
-					
-					chosen_final_drive = split_str[#split_str]
+			for _, drivetrain_slot in pairs(drivetrain_slots_names) do
+				if slot_name:match(drivetrain_slot) then
+					has_match = true
+					break
 				end
-				
-			else
-				-- For all other slots, just get a random part
-				
-				local random_part = parts_for_slot[math.random(#parts_for_slot)]
+			end
 
-				all_parts[slot_name] = random_part
+			if has_match then
+				-- Some slots need part to be chosen wisely
+
+				if slot_name:match("fueltank") or slot_name:match("fuelcell") then
+					curr_parts[slot_name] = getRandomFuelTankPart(parts_for_slot, fuel_type)
+
+				elseif slot_name:strEndsWith("engine") then
+					curr_parts[slot_name] = getRandomEnginePart(parts_for_slot, fuel_type)
 				
-			end         
+				elseif slot_name:match("differential") then		
+					curr_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
+					
+				elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
+					curr_parts[slot_name] = getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
+					
+					if not chosen_final_drive then
+						local split_str = split(curr_parts[slot_name], "_")
+						
+						chosen_final_drive = split_str[#split_str]
+					end
+					
+				else
+					-- For all other slots, just get a random part
+					
+					local random_part = parts_for_slot[math.random(#parts_for_slot)]
+
+					curr_parts[slot_name] = random_part
+					
+				end 
+      end
 		end
 	end
 	
-	extensions.core_vehicle_partmgmt.setPartsConfig(all_parts, true)
+	extensions.core_vehicle_partmgmt.setPartsConfig(curr_parts, true)
+end
+
+-- Also has chance to choose no parts
+local function randomizeOnlyBodyParts()
+	local veh = be:getPlayerVehicle(0)	
+	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
+	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
+	
+	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
+	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
+	
+	local curr_parts = veh_data.config.parts
+
+	-- Cycle through each slot and choose random parts for them
+	for slot_name, _ in pairs(all_slots) do
+		local parts_for_slot = all_slots[slot_name]
+		
+		if parts_for_slot then
+			-- Get only non drivetrain parts
+			
+			local has_match = false
+			
+			for _, drivetrain_slot in pairs(drivetrain_slots_names) do
+				if slot_name:match(drivetrain_slot) then
+					has_match = true
+					break
+				end
+			end
+		
+			-- If slot not any of the drivetrain slots, then randomize it
+			if not has_match then
+				table.insert(parts_for_slot, "")
+			
+				local random_part = parts_for_slot[math.random(#parts_for_slot)]
+				curr_parts[slot_name] = random_part
+			end
+		end	
+	end
+
+	extensions.core_vehicle_partmgmt.setPartsConfig(curr_parts, true)
+end
+
+local function randomizeParts()
+	randomizeOnlyDrivetrainParts()
+	randomizeOnlyBodyParts()
+	
 end
 
 local function randomizeTuning()
@@ -266,6 +364,8 @@ local function randomizeEverything()
 	randomizePaint()
 end
 
+M.randomizeOnlyDrivetrainParts = randomizeOnlyDrivetrainParts
+M.randomizeOnlyBodyParts = randomizeOnlyBodyParts
 M.randomizeParts = randomizeParts
 M.randomizeTuning = randomizeTuning
 M.randomizePaint = randomizePaint
