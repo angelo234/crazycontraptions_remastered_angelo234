@@ -135,6 +135,7 @@ local drivetrain_slots_names =
 	"intake",
 	"finaldrive",
 	"fueltank",
+	"fuelcell",
 	"steer",
 	"shock",
 	"spring",
@@ -156,7 +157,8 @@ local drivetrain_slots_names =
 	"radiator",
 	"main",
 	"linelock",
-	"link"
+	"link",
+	"hub"
 }
 
 local function randomizeOnlyDrivetrainParts()
@@ -198,12 +200,16 @@ local function randomizeOnlyDrivetrainParts()
 
 				elseif slot_name:strEndsWith("engine") then
 					curr_parts[slot_name] = getRandomEnginePart(parts_for_slot, fuel_type)
-				
+
 				elseif slot_name:match("differential") then		
 					curr_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
 					
-				elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
+				elseif slot_name:match("finaldrive") then
+					dump(chosen_final_drive)
+				
 					curr_parts[slot_name] = getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
+					
+					dump(curr_parts[slot_name])
 					
 					if not chosen_final_drive then
 						local split_str = split(curr_parts[slot_name], "_")
@@ -255,7 +261,10 @@ local function randomizeOnlyBodyParts()
 		
 			-- If slot not any of the drivetrain slots, then randomize it
 			if not has_match then
-				table.insert(parts_for_slot, "")
+				-- Only body must have a part
+				if not slot_name:match("body") then
+					table.insert(parts_for_slot, "")
+				end
 			
 				local random_part = parts_for_slot[math.random(#parts_for_slot)]
 				curr_parts[slot_name] = random_part
