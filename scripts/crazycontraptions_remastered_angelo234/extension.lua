@@ -8,6 +8,46 @@ local fuel_types = {
 	{engine={"electric"}, fuel={"battery"}}
 }
 
+local drivetrain_slots_names = 
+{
+	"brake",
+	"n2o",
+	"tire",
+	"ABS",
+	"DSE",
+	"ESC",
+	"diff",
+	"driveshaft",
+	"engine",
+	"intake",
+	"finaldrive",
+	"fueltank",
+	"fuelcell",
+	"steer",
+	"shock",
+	"spring",
+	"strut",
+	"suspension",
+	"coilover",
+	"swaybar",
+	"transfer",
+	"transmission",
+	"wheel",
+	"oilpan",
+	"converter",
+	"ecu",
+	"axle",
+	"leaf",
+	"feet",
+	"halfshaft",
+	"internals",
+	"radiator",
+	"main",
+	"linelock",
+	"link",
+	"hub"
+}
+
 string.strEndsWith = function(s, suffix)
 	return s:lower():sub(-string.len(suffix:lower())) == suffix:lower()
 end
@@ -121,46 +161,6 @@ local function getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
 	end
 end
 
-local drivetrain_slots_names = 
-{
-	"brake",
-	"n2o",
-	"tire",
-	"ABS",
-	"DSE",
-	"ESC",
-	"diff",
-	"driveshaft",
-	"engine",
-	"intake",
-	"finaldrive",
-	"fueltank",
-	"fuelcell",
-	"steer",
-	"shock",
-	"spring",
-	"strut",
-	"suspension",
-	"coilover",
-	"swaybar",
-	"transfer",
-	"transmission",
-	"wheel",
-	"oilpan",
-	"converter",
-	"ecu",
-	"axle",
-	"leaf",
-	"feet",
-	"halfshaft",
-	"internals",
-	"radiator",
-	"main",
-	"linelock",
-	"link",
-	"hub"
-}
-
 local function randomizeOnlyDrivetrainParts()
 	local veh = be:getPlayerVehicle(0)	
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
@@ -204,13 +204,9 @@ local function randomizeOnlyDrivetrainParts()
 				elseif slot_name:match("differential") then		
 					curr_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
 					
-				elseif slot_name:match("finaldrive") then
-					dump(chosen_final_drive)
-				
+				elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
 					curr_parts[slot_name] = getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
-					
-					dump(curr_parts[slot_name])
-					
+
 					if not chosen_final_drive then
 						local split_str = split(curr_parts[slot_name], "_")
 						
@@ -227,6 +223,36 @@ local function randomizeOnlyDrivetrainParts()
 				end 
       end
 		end
+	end
+	
+	-- If we chose race finaldrive parts then set ratios equal in tuning vars
+	if chosen_final_drive:match("race") then
+		local vars = veh_data.vdata.variables
+		
+		chosen_final_drive = nil
+		
+		local val_only_vars = {}
+		
+		for k, v in pairs(vars) do
+			-- Set random value between min and max range	
+
+			if k:match("finaldrive") then
+				-- For adjustable final drive diffs, choose same ratio for front and rear
+				
+				if chosen_final_drive then
+					val_only_vars[k] = chosen_final_drive
+					
+				else
+					local rand_num = v.min + (v.max - v.min) * math.random()	
+					rand_num = math.floor(rand_num / v.step) * v.step;
+					val_only_vars[k] = rand_num
+					
+					chosen_final_drive = rand_num
+				end
+			end
+		end
+		
+		extensions.core_vehicle_partmgmt.setConfigVars(val_only_vars, false)	
 	end
 	
 	extensions.core_vehicle_partmgmt.setPartsConfig(curr_parts, true)

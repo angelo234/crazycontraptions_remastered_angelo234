@@ -5,6 +5,6 @@
   "description": "Creates a crazy thing out of random parts.",
   "directive": "crazycontraptionsRemasteredAngelo234",
   "domElement": "<crazycontraptions-remastered-angelo234></crazycontraptions-remastered-angelo234>",
-  "css": { "width": "230px", "height": "190px", "min-width": "200px", "min-height": "50px", "top": "200px", "right": "200px"}
+  "css": { "width": "440px", "height": "150px", "min-width": "200px", "min-height": "50px", "top": "200px", "right": "200px"}
 }
    
