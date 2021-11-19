@@ -1,6 +1,8 @@
-local M = {}
-
+local extra_utils = require('scripts/crazycontraptions_remastered_angelo234/extraUtils')
+local special_parts = require('scripts/crazycontraptions_remastered_angelo234/specialParts')
 local jbeam_io = require('jbeam/io')
+
+local M = {}
 
 local fuel_types = {
 	{engine={"petrol", "gasoline"}, fuel={"petrol", "gasoline"}},
@@ -45,121 +47,9 @@ local drivetrain_slots_names =
 	"main",
 	"linelock",
 	"link",
-	"hub"
+	"hub",
+	"radiator"
 }
-
-string.strEndsWith = function(s, suffix)
-	return s:lower():sub(-string.len(suffix:lower())) == suffix:lower()
-end
-
-local function getRandomFuelTankPart(parts_for_slot, fuel_type)
-	local filtered_parts = {}
-					
-	for _, part in pairs(parts_for_slot) do
-		for _, alias_fuel in pairs(fuel_type.fuel) do
-			if part:match(alias_fuel) then
-				table.insert(filtered_parts, part)   
-			end
-		end
-		
-	end
-	
-	-- If no fueltanks matched the fuel type, find petrol fueltanks
-	if #filtered_parts == 0 then
-		for _, part in pairs(parts_for_slot) do
-			local has_match = false
-		
-			for _, a_fuel_type in pairs(fuel_types) do
-				for _, an_alias_fuel in pairs(a_fuel_type.fuel) do
-					if part:match(an_alias_fuel) then
-						has_match = true
-					end
-				end
-			end
-		
-			if not has_match then
-				table.insert(filtered_parts, part)
-			end
-		end
-	end
-	
-	return filtered_parts[math.random(#filtered_parts)]
-end
-
-local function getRandomEnginePart(parts_for_slot, fuel_type)
-	local filtered_parts = {}
-					
-	for _, part in pairs(parts_for_slot) do
-		for _, alias_engine in pairs(fuel_type.engine) do
-			if part:match(alias_engine) then
-				table.insert(filtered_parts, part)   
-			end
-		end
-	end
-	
-	-- If no engines matched the fuel type, find petrol engines
-	if #filtered_parts == 0 then
-		for _, part in pairs(parts_for_slot) do
-			local has_match = false
-		
-			for _, a_fuel_type in pairs(fuel_types) do
-				for _, an_alias_engine in pairs(a_fuel_type.engine) do
-					if part:match(an_alias_engine) then
-						has_match = true
-					end
-				end
-			end
-		
-			if not has_match then
-				table.insert(filtered_parts, part)
-			end
-		end
-	end
-	
-	return filtered_parts[math.random(#filtered_parts)]
-end
-
-local function getRandomDifferentialPart(parts_for_slot, fuel_type)
-	if fuel_type.fuel[1] == fuel_types[3].fuel[1] then
-		-- Any differential for electric vehicle
-	
-		return parts_for_slot[math.random(#parts_for_slot)]			
-		
-	else
-		-- If not electric vehicle, don't choose electric motor
-	
-		local filtered_parts = {}
-		
-		for _, part in pairs(parts_for_slot) do
-			if not part:match(fuel_types[3].engine[1]) then
-				table.insert(filtered_parts, part)   
-			end
-		end
-		
-		return filtered_parts[math.random(#filtered_parts)]
-		
-	end
-end
-
-local function getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
-	if chosen_final_drive then
-		-- If final drive chosen, filter by that final drive
-	
-		local filtered_parts = {}
-					
-		for _, part in pairs(parts_for_slot) do
-			if part:strEndsWith(chosen_final_drive) then
-				table.insert(filtered_parts, part)   
-			end		
-		end
-		
-		return filtered_parts[math.random(#filtered_parts)]	
-		
-	else
-		return parts_for_slot[math.random(#parts_for_slot)]	
-	
-	end
-end
 
 local function randomizeOnlyDrivetrainParts()
 	local veh = be:getPlayerVehicle(0)	
@@ -196,16 +86,16 @@ local function randomizeOnlyDrivetrainParts()
 				-- Some slots need part to be chosen wisely
 
 				if slot_name:match("fueltank") or slot_name:match("fuelcell") then
-					curr_parts[slot_name] = getRandomFuelTankPart(parts_for_slot, fuel_type)
+					curr_parts[slot_name] = special_parts.getRandomFuelTankPart(parts_for_slot, fuel_type, fuel_types)
 
-				elseif slot_name:strEndsWith("engine") then
-					curr_parts[slot_name] = getRandomEnginePart(parts_for_slot, fuel_type)
+				elseif slot_name:endsWith("engine") then
+					curr_parts[slot_name] = special_parts.getRandomEnginePart(parts_for_slot, fuel_type, fuel_types)
 
 				elseif slot_name:match("differential") then		
-					curr_parts[slot_name] = getRandomDifferentialPart(parts_for_slot, fuel_type)
+					curr_parts[slot_name] = special_parts.getRandomDifferentialPart(parts_for_slot, fuel_type, fuel_types)
 					
 				elseif slot_name:find(veh_name) and slot_name:match("finaldrive") then
-					curr_parts[slot_name] = getRandomFinalDrivePart(parts_for_slot, chosen_final_drive)
+					curr_parts[slot_name] = special_parts.getRandomFinalDrivePart(parts_for_slot, chosen_final_drive, fuel_types)
 
 					if not chosen_final_drive then
 						local split_str = split(curr_parts[slot_name], "_")
@@ -226,7 +116,7 @@ local function randomizeOnlyDrivetrainParts()
 	end
 	
 	-- If we chose race finaldrive parts then set ratios equal in tuning vars
-	if chosen_final_drive:match("race") then
+	if chosen_final_drive and chosen_final_drive:match("race") then
 		local vars = veh_data.vdata.variables
 		
 		chosen_final_drive = nil
@@ -244,7 +134,7 @@ local function randomizeOnlyDrivetrainParts()
 					
 				else
 					local rand_num = v.min + (v.max - v.min) * math.random()	
-					rand_num = math.floor(rand_num / v.step) * v.step;
+					rand_num = math.abs(math.ceil(rand_num / v.step - 0.5) * v.step)
 					val_only_vars[k] = rand_num
 					
 					chosen_final_drive = rand_num
@@ -329,7 +219,7 @@ local function randomizeTuning()
 				
 			else
 				local rand_num = v.min + (v.max - v.min) * math.random()	
-				rand_num = math.floor(rand_num / v.step) * v.step;
+				rand_num = math.abs(math.ceil(rand_num / v.step - 0.5) * v.step)
 				val_only_vars[k] = rand_num
 				
 				chosen_final_drive = rand_num
@@ -337,7 +227,7 @@ local function randomizeTuning()
 			
 		else	
 			local rand_num = v.min + (v.max - v.min) * math.random()	
-			rand_num = math.floor(rand_num / v.step) * v.step;
+			rand_num = math.abs(math.ceil(rand_num / v.step - 0.5) * v.step)
 			val_only_vars[k] = rand_num
 		end
 	end
