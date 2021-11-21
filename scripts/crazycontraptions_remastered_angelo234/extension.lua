@@ -59,6 +59,8 @@ local function randomizeOnlyDrivetrainParts()
 	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 	
+	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slots_names)
+	
 	local curr_parts = veh_data.config.parts
 	
 	-- Choose fuel type to use randomly
@@ -157,6 +159,9 @@ local function randomizeOnlyBodyParts()
 	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 	
+	-- Filter out core slots
+	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slots_names)
+	
 	local curr_parts = veh_data.config.parts
 
 	-- Cycle through each slot and choose random parts for them
@@ -177,11 +182,6 @@ local function randomizeOnlyBodyParts()
 		
 			-- If slot not any of the drivetrain slots, then randomize it
 			if not has_match then
-				-- Only body must have a part
-				if not slot_name:match("body") then
-					table.insert(parts_for_slot, "")
-				end
-			
 				local random_part = parts_for_slot[math.random(#parts_for_slot)]
 				curr_parts[slot_name] = random_part
 			end
