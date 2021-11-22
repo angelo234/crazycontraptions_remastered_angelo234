@@ -17,7 +17,7 @@ link: function (scope, element, attrs) {
 	};
 	
 	scope.randomizeOnlyBodyParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts()');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts(false)');
 	};
 	
 	scope.randomizeParts = function () {

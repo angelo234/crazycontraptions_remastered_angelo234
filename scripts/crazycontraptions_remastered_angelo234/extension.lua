@@ -151,7 +151,7 @@ local function randomizeOnlyDrivetrainParts()
 end
 
 -- Also has chance to choose no parts
-local function randomizeOnlyBodyParts()
+local function randomizeOnlyBodyParts(randomize_frame)
 	local veh = be:getPlayerVehicle(0)	
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
 	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
@@ -167,6 +167,10 @@ local function randomizeOnlyBodyParts()
 	-- Cycle through each slot and choose random parts for them
 	for slot_name, _ in pairs(all_slots) do
 		local parts_for_slot = all_slots[slot_name]
+		
+		if not randomize_frame and slot_name:match("frame") then
+			parts_for_slot = nil
+		end
 		
 		if parts_for_slot then
 			-- Get only non drivetrain parts
@@ -193,7 +197,7 @@ end
 
 local function randomizeParts()
 	randomizeOnlyDrivetrainParts()
-	randomizeOnlyBodyParts()
+	randomizeOnlyBodyParts(true)
 	
 end
 
