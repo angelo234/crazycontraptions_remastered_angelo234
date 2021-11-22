@@ -49,8 +49,16 @@ local powertrain_slots_names =
 	"link",
 	"hub",
 	"radiator",
+	"radsupport",
 	"exhaust",
-	"muffler"
+	"muffler",
+	"header",
+	"stack",
+	"manifold",
+	"turbo",
+	"transaxle",
+	"gearbox",
+	"flywheel"
 }
 
 local function randomizeOnlyPowertrainParts()
@@ -170,7 +178,8 @@ local function randomizeOnlyBodyParts(randomize_frame)
 	for slot_name, _ in pairs(all_slots) do
 		local parts_for_slot = all_slots[slot_name]
 		
-		if not randomize_frame and slot_name:match("frame") then
+		-- Don't randomize frame or body if option selected
+		if not randomize_frame and (slot_name:match("frame") or slot_name:match("body")) then
 			parts_for_slot = nil
 		end
 		
