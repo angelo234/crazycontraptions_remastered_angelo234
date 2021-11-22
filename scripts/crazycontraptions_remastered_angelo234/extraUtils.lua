@@ -5,7 +5,7 @@ string.endsWith = function(s, suffix)
 end
 
 -- Adds empty part as possible part to choose for non core slots
-local function addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slots_names)
+local function addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
 	local core_slots = {}
 	
 	-- Find all core slots
@@ -32,9 +32,9 @@ local function addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slot
 			end
 		end
 		
-		-- Drivetrain slots will also not have empty parts
-		for _, drivetrain_slot_name in pairs(drivetrain_slots_names) do
-			if slot_name:match(drivetrain_slot_name) then
+		-- Powertrain slots will also not have empty parts
+		for _, powertrain_slot_name in pairs(powertrain_slots_names) do
+			if slot_name:match(powertrain_slot_name) then
 				is_core_slot = true
 				break
 			end

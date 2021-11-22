@@ -10,7 +10,7 @@ local fuel_types = {
 	{engine={"electric"}, fuel={"battery"}}
 }
 
-local drivetrain_slots_names = 
+local powertrain_slots_names = 
 {
 	"brake",
 	"n2o",
@@ -48,10 +48,12 @@ local drivetrain_slots_names =
 	"linelock",
 	"link",
 	"hub",
-	"radiator"
+	"radiator",
+	"exhaust",
+	"muffler"
 }
 
-local function randomizeOnlyDrivetrainParts()
+local function randomizeOnlyPowertrainParts()
 	local veh = be:getPlayerVehicle(0)	
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
 	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
@@ -59,7 +61,7 @@ local function randomizeOnlyDrivetrainParts()
 	local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 	
-	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slots_names)
+	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
 	
 	local curr_parts = veh_data.config.parts
 	
@@ -74,11 +76,11 @@ local function randomizeOnlyDrivetrainParts()
 		
 		if parts_for_slot then
 
-			-- Get only drivetrain parts
+			-- Get only powertrain parts
 			local has_match = false
 			
-			for _, drivetrain_slot in pairs(drivetrain_slots_names) do
-				if slot_name:match(drivetrain_slot) then
+			for _, powertrain_slot in pairs(powertrain_slots_names) do
+				if slot_name:match(powertrain_slot) then
 					has_match = true
 					break
 				end
@@ -160,7 +162,7 @@ local function randomizeOnlyBodyParts(randomize_frame)
 	local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 	
 	-- Filter out core slots
-	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, drivetrain_slots_names)
+	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
 	
 	local curr_parts = veh_data.config.parts
 
@@ -173,18 +175,18 @@ local function randomizeOnlyBodyParts(randomize_frame)
 		end
 		
 		if parts_for_slot then
-			-- Get only non drivetrain parts
+			-- Get only non powertrain parts
 			
 			local has_match = false
 			
-			for _, drivetrain_slot in pairs(drivetrain_slots_names) do
-				if slot_name:match(drivetrain_slot) then
+			for _, powertrain_slot in pairs(powertrain_slots_names) do
+				if slot_name:match(powertrain_slot) then
 					has_match = true
 					break
 				end
 			end
 		
-			-- If slot not any of the drivetrain slots, then randomize it
+			-- If slot not any of the powertrain slots, then randomize it
 			if not has_match then
 				local random_part = parts_for_slot[math.random(#parts_for_slot)]
 				curr_parts[slot_name] = random_part
@@ -196,7 +198,7 @@ local function randomizeOnlyBodyParts(randomize_frame)
 end
 
 local function randomizeParts()
-	randomizeOnlyDrivetrainParts()
+	randomizeOnlyPowertrainParts()
 	randomizeOnlyBodyParts(true)
 	
 end
@@ -271,7 +273,7 @@ local function randomizeEverything()
 	randomizePaint()
 end
 
-M.randomizeOnlyDrivetrainParts = randomizeOnlyDrivetrainParts
+M.randomizeOnlyPowertrainParts = randomizeOnlyPowertrainParts
 M.randomizeOnlyBodyParts = randomizeOnlyBodyParts
 M.randomizeParts = randomizeParts
 M.randomizeTuning = randomizeTuning

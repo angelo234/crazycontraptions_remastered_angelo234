@@ -12,8 +12,8 @@ link: function (scope, element, attrs) {
 		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything()');
 	};
 	
-	scope.randomizeOnlyDrivetrainParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyDrivetrainParts()');
+	scope.randomizeOnlyPowertrainParts = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyPowertrainParts()');
 	};
 	
 	scope.randomizeOnlyBodyParts = function () {
