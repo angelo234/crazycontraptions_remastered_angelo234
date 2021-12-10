@@ -58,7 +58,8 @@ local powertrain_slots_names =
 	"turbo",
 	"transaxle",
 	"gearbox",
-	"flywheel"
+	"flywheel",
+	"subframe"
 }
 
 local function randomizeOnlyPowertrainParts()
@@ -72,6 +73,12 @@ local function randomizeOnlyPowertrainParts()
 	all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
 	
 	local curr_parts = veh_data.config.parts
+	
+	-- Stop if any variable is nil
+	if not veh or not veh_data or not veh_name 
+		or not all_slots or not all_parts or not curr_parts then
+		return
+	end
 	
 	-- Choose fuel type to use randomly
 	local fuel_type = fuel_types[math.random(3)]
@@ -174,6 +181,12 @@ local function randomizeOnlyBodyParts(randomize_frame)
 	
 	local curr_parts = veh_data.config.parts
 
+	-- Stop if any variable is nil
+	if not veh or not veh_data or not veh_name 
+		or not all_slots or not all_parts or not curr_parts then
+		return
+	end
+
 	-- Cycle through each slot and choose random parts for them
 	for slot_name, _ in pairs(all_slots) do
 		local parts_for_slot = all_slots[slot_name]
@@ -216,8 +229,12 @@ local function randomizeTuning()
 	local veh = be:getPlayerVehicle(0)	
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
 	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
-	
 	local vars = veh_data.vdata.variables
+	
+	-- Stop if any variable is nil
+	if not veh or not veh_data or not veh_name or not vars then
+		return
+	end
 	
 	local chosen_final_drive = nil
 	
@@ -256,6 +273,11 @@ local function randomizePaint()
 	local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
 	local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
 	veh_data.config.paints = veh_data.config.paints or {}
+	
+	-- Stop if any variable is nil
+	if not veh or not veh_data or not veh_name then
+		return
+	end
 	
 	for i = 1, 3 do
 		local paint = createVehiclePaint(
