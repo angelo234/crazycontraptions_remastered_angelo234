@@ -6,28 +6,30 @@ replace: true,
 restrict: 'EA',
 link: function (scope, element, attrs) {
 	// The current overlay screen the user is on (default: null)
-	scope.overlayScreen = null;	
+	scope.overlayScreen = null;
+	scope.randomizeOnlyPowertrainPartsIncludesEmptyPart = false;
+	scope.randomizeOnlyBodyPartsIncludesEmptyPart = false;
 
 	scope.randomizeEverything = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything()');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
 	};
-	
+
 	scope.randomizeOnlyPowertrainParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyPowertrainParts()');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyPowertrainParts(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
 	};
-	
+
 	scope.randomizeOnlyBodyParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts(false)');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts(false' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
 	};
-	
+
 	scope.randomizeParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeParts()');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeParts(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
 	};
-	
+
 	scope.randomizeTuning = function () {
 		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeTuning()');
 	};
-	
+
 	scope.randomizePaint = function () {
 		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizePaint()');
 	};

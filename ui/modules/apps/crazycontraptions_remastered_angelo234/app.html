@@ -1,9 +1,9 @@
 <div style="height:100%; width: 100%;"layout="column">
 	<style>
 		.table-element {
-			width: 50%; 
+			width: 50%;
 			text-align: center;
-			padding-right: 4px; 
+			padding-right: 4px;
 			margin: 0;
 		}
 		.the-button {
@@ -11,12 +11,12 @@
 			font-size: 12.5px;
 		}
 	</style>
-	
+
 	<table style="border-collapse: collapse; border-spacing: 15px; min-width: 1%;">
 		<tbody>
 			<tr>
 				<td class="table-element"><md-button ng-click="randomizeEverything()" class="md-raised md-primary the-button" style="background-color: #ff6600; color: white;" flexmd-no-ink>Scramble Everything!</md-button></td>
-				<td class="table-element"><md-button ng-click="randomizeParts()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble All Parts</md-button></td>		
+				<td class="table-element"><md-button ng-click="randomizeParts()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble All Parts</md-button></td>
 			</tr>
 			<tr>
 				<td class="table-element"><md-button ng-click="randomizeOnlyPowertrainParts()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble Powertrain Parts</md-button></td>
@@ -25,6 +25,10 @@
 			<tr>
 				<td class="table-element"><md-button ng-click="randomizeTuning()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble Tuning</md-button></td>
 				<td class="table-element"><md-button ng-click="randomizePaint()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble Paint</md-button></td>
+			</tr>
+			<tr>
+				<td class="table-element"><input type="checkbox" ng-model="randomizeOnlyPowertrainPartsIncludesEmptyPart">Include "Empty" Part in Powertrain Scramble</td>
+				<td class="table-element"><input type="checkbox" ng-model="randomizeOnlyBodyPartsIncludesEmptyPart">Include "Empty" Part in Body Scramble</td>
 			</tr>
 		</tbody>
 	</table>
