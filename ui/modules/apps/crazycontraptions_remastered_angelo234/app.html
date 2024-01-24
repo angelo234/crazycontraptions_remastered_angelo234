@@ -27,8 +27,8 @@
 				<td class="table-element"><md-button ng-click="randomizePaint()" class="md-raised md-primary the-button" flexmd-no-ink>Scramble Paint</md-button></td>
 			</tr>
 			<tr>
-				<td class="table-element"><input type="checkbox" ng-model="randomizeOnlyPowertrainPartsIncludesEmptyPart">Include "Empty" Part in Powertrain Scramble</td>
-				<td class="table-element"><input type="checkbox" ng-model="randomizeOnlyBodyPartsIncludesEmptyPart">Include "Empty" Part in Body Scramble</td>
+				<td class="table-element"><input type="checkbox" ng-change="setSettings()" ng-model="powertrainPartsIncludesEmptyPart">Include "Empty" Part in Powertrain Scramble</td>
+				<td class="table-element"><input type="checkbox" ng-change="setSettings()" ng-model="bodyPartsIncludesEmptyPart">Include "Empty" Part in Body Scramble</td>
 			</tr>
 		</tbody>
 	</table>

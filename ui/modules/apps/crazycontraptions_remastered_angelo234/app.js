@@ -7,23 +7,29 @@ restrict: 'EA',
 link: function (scope, element, attrs) {
 	// The current overlay screen the user is on (default: null)
 	scope.overlayScreen = null;
-	scope.randomizeOnlyPowertrainPartsIncludesEmptyPart = false;
-	scope.randomizeOnlyBodyPartsIncludesEmptyPart = false;
+	scope.powertrainPartsIncludesEmptyPart = false;
+	scope.bodyPartsIncludesEmptyPart = false;
+
+	// Init get settings
+	bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.getSettings()', (res) => {
+		scope.powertrainPartsIncludesEmptyPart = res.powertrainPartsIncludesEmptyPart;
+		scope.bodyPartsIncludesEmptyPart = res.bodyPartsIncludesEmptyPart;
+	})
 
 	scope.randomizeEverything = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeEverything()');
 	};
 
 	scope.randomizeOnlyPowertrainParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyPowertrainParts(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyPowertrainParts()');
 	};
 
 	scope.randomizeOnlyBodyParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts(false' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeOnlyBodyParts()');
 	};
 
 	scope.randomizeParts = function () {
-		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeParts(' + scope.randomizeOnlyPowertrainPartsIncludesEmptyPart + ',' + scope.randomizeOnlyBodyPartsIncludesEmptyPart + ')');
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizeParts()');
 	};
 
 	scope.randomizeTuning = function () {
@@ -33,6 +39,10 @@ link: function (scope, element, attrs) {
 	scope.randomizePaint = function () {
 		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.randomizePaint()');
 	};
+
+	scope.setSettings = function () {
+		bngApi.engineLua('scripts_crazycontraptions__remastered__angelo234_extension.setSettings(' + scope.powertrainPartsIncludesEmptyPart + ',' + scope.bodyPartsIncludesEmptyPart + ')');
+	}
 },
 };
 }]);

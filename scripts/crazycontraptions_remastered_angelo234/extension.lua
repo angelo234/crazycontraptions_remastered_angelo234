@@ -62,7 +62,10 @@ local powertrain_slots_names =
   "subframe"
 }
 
-local function randomizeOnlyPowertrainParts(include_empty_part)
+local _powertrainPartsIncludesEmptyPart = false
+local _bodyPartsIncludesEmptyPart = false
+
+local function randomizeOnlyPowertrainParts()
   local veh = be:getPlayerVehicle(0)
   local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
   local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
@@ -70,7 +73,7 @@ local function randomizeOnlyPowertrainParts(include_empty_part)
   local all_slots = jbeam_io.getAvailableSlotMap(veh_data.ioCtx)
   local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 
-  if include_empty_part then
+  if _powertrainPartsIncludesEmptyPart then
     all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
   end
 
@@ -88,7 +91,7 @@ local function randomizeOnlyPowertrainParts(include_empty_part)
   local chosen_final_drive = nil
 
   -- Cycle through each slot and choose random parts for them
-  for slot_name, _ in pairs(curr_parts) do
+  for slot_name, _ in pairs(all_slots) do
     local parts_for_slot = all_slots[slot_name]
 
     if parts_for_slot then
@@ -169,8 +172,7 @@ local function randomizeOnlyPowertrainParts(include_empty_part)
   extensions.core_vehicle_partmgmt.setPartsConfig(curr_parts, true)
 end
 
--- Also has chance to choose no parts
-local function randomizeOnlyBodyParts(randomize_frame, include_empty_part)
+local function randomizeOnlyBodyParts()
   local veh = be:getPlayerVehicle(0)
   local veh_data = extensions.core_vehicle_manager.getPlayerVehicleData()
   local veh_name = be:getPlayerVehicle(0):getJBeamFilename()
@@ -179,7 +181,7 @@ local function randomizeOnlyBodyParts(randomize_frame, include_empty_part)
   local all_parts = jbeam_io.getAvailableParts(veh_data.ioCtx)
 
   -- Filter out core slots
-  if include_empty_part then
+  if _bodyPartsIncludesEmptyPart then
     all_slots = extra_utils.addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slots_names)
   end
 
@@ -192,13 +194,8 @@ local function randomizeOnlyBodyParts(randomize_frame, include_empty_part)
   end
 
   -- Cycle through each slot and choose random parts for them
-  for slot_name, _ in pairs(curr_parts) do
+  for slot_name, _ in pairs(all_slots) do
     local parts_for_slot = all_slots[slot_name]
-
-    -- Don't randomize frame or body if option selected
-    if not randomize_frame and (slot_name:match("frame") or slot_name:match("body")) then
-      parts_for_slot = nil
-    end
 
     if parts_for_slot then
       -- Get only non powertrain parts
@@ -223,10 +220,9 @@ local function randomizeOnlyBodyParts(randomize_frame, include_empty_part)
   extensions.core_vehicle_partmgmt.setPartsConfig(curr_parts, true)
 end
 
-local function randomizeParts(powertrain_include_empty_part, body_include_empty_part)
-  randomizeOnlyPowertrainParts(powertrain_include_empty_part)
-  randomizeOnlyBodyParts(true, body_include_empty_part)
-
+local function randomizeParts()
+  randomizeOnlyPowertrainParts()
+  randomizeOnlyBodyParts()
 end
 
 local function randomizeTuning()
@@ -302,13 +298,22 @@ local function randomizePaint()
   end
 end
 
-local function randomizeEverything(powertrain_include_empty_part, body_include_empty_part)
-  randomizeParts(powertrain_include_empty_part, body_include_empty_part)
+local function randomizeEverything()
+  randomizeParts()
   randomizeTuning()
   randomizePaint()
 end
 
-M.onInit = function()
+local function getSettings()
+  return {powertrainPartsIncludesEmptyPart = _powertrainPartsIncludesEmptyPart, bodyPartsIncludesEmptyPart = _bodyPartsIncludesEmptyPart}
+end
+
+local function setSettings(powertrainPartsIncludesEmptyPart, bodyPartsIncludesEmptyPart)
+  _powertrainPartsIncludesEmptyPart, _bodyPartsIncludesEmptyPart = powertrainPartsIncludesEmptyPart, bodyPartsIncludesEmptyPart
+end
+
+
+local function onInit()
   setExtensionUnloadMode(M, "manual")
 end
 
@@ -318,5 +323,8 @@ M.randomizeParts = randomizeParts
 M.randomizeTuning = randomizeTuning
 M.randomizePaint = randomizePaint
 M.randomizeEverything = randomizeEverything
+M.getSettings = getSettings
+M.setSettings = setSettings
+M.onInit = onInit
 
 return M
