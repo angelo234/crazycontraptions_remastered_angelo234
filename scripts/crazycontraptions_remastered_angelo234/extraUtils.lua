@@ -10,8 +10,8 @@ local function addEmptyPartForNonCoreSlots(all_slots, all_parts, powertrain_slot
 
   -- Find all core slots
   for part_name, part_data in pairs(all_parts) do
-    if part_data.slots then
-      for slot_name, slot_data in pairs(part_data.slots) do
+    if part_data.slotInfoUi then
+      for slot_name, slot_data in pairs(part_data.slotInfoUi) do
         if slot_data.coreSlot then
           table.insert(core_slots, slot_name)
         end
